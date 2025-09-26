@@ -5,3 +5,45 @@
 @import '@skeletonlabs/skeleton/themes/cerberus';
 
 @source '../node_modules/@skeletonlabs/skeleton-svelte/dist';
+
+@theme {
+    --color-*: initial;
+    --color-white: #fff;
+    --color-black: 210 13% 9%; /* softened black for maximum contrast and readability */
+    --color-primary-50: 224 100% 96%;
+    --color-primary-100: 223 100% 90%;
+    --color-primary-200: 221 100% 81%;
+    --color-primary-300: 218 100% 70%;
+    --color-primary-400: 208 98% 50%;
+    --color-primary-500: 208 99% 42%;
+    --color-primary-600: 209 99% 34%;
+    --color-primary-700: 209 99% 27%;
+    --color-primary-800: 210 100% 20%;
+    --color-primary-900: 212 100% 15%;
+    --color-primary-1000: 213 100% 12%;
+    --color-primary-1100: 215 100% 8%;
+    --color-secondary-50: 9 100% 96%;
+    --color-secondary-100: 10 100% 90%;
+    --color-secondary-200: 11 100% 81%;
+    --color-secondary-300: 13 100% 71%;
+    --color-secondary-400: 24 100% 50%;
+    --color-secondary-500: 24 100% 45%;
+    --color-secondary-600: 24 100% 38%;
+    --color-secondary-700: 23 100% 31%;
+    --color-secondary-800: 22 100% 23%;
+    --color-secondary-900: 20 100% 15%;
+    --color-secondary-1000: 17 100% 11%;
+    --color-secondary-1100: 13 100% 7%;
+    --color-accent-50: 204 17% 94%;
+    --color-accent-100: 207 15% 88%;
+    --color-accent-200: 205 16% 79%;
+    --color-accent-300: 205 16% 71%;
+    --color-accent-400: 207 12% 65%;
+    --color-accent-500: 205 9% 56%;
+    --color-accent-600: 203 7% 47%;
+    --color-accent-700: 203 7% 37%;
+    --color-accent-800: 204 7% 27%;
+    --color-accent-900: 206 8% 17%;
+    --color-accent-1000: 204 8% 12%;
+    --color-accent-1100: 210 12% 7%;
+}
