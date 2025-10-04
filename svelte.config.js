@@ -12,11 +12,6 @@ const config = {
 			config: './wrangler.jsonc',
 			platformProxy: {
 				persist: true,
-			},
-			fallback: 'plaintext',
-			routes: {
-				include: ['/*'],
-				exclude: ['<all>']
 			}
 		})
 	}

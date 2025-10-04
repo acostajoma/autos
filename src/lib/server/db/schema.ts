@@ -1,6 +1,6 @@
 import { pgTable, serial, text, integer, decimal, primaryKey, uuid, timestamp, boolean, index, check, foreignKey, pgPolicy } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
-import { authenticatedRole, authUsers,   } from "drizzle-orm/supabase";
+import { authenticatedRole, authUsers } from "drizzle-orm/supabase";
 import { createInsertSchema, } from 'drizzle-zod';
 
 // User
