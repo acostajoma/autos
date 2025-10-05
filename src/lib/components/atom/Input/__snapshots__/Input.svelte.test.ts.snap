@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Input Component > snapshot del componente básico 1`] = `"<!----><label class="label mb-2" for="snapshot-input">Usuario</label><!----> <input class="input user-invalid:input-error user-invalid:text-error user-invalid:placeholder:text-error" id="snapshot-input" type="text" name="username" placeholder="Usuario" aria-label="Nombre de usuario"> <!---->"`;
+
+exports[`Input Component > snapshot of the basic component 1`] = `"<!----><label class="label mb-2" for="snapshot-input">Usuario</label><!----> <input class="input user-invalid:input-error user-invalid:text-error user-invalid:placeholder:text-error" id="snapshot-input" type="text" name="username" placeholder="Usuario" aria-label="Nombre de usuario"> <!---->"`;
+
+exports[`Input Component - Page State with NO errors > snapshot of the basic component 1`] = `"<!----><label class="label mb-2" for="snapshot-input">Usuario</label><!----> <input class="input user-invalid:input-error user-invalid:text-error user-invalid:placeholder:text-error" id="snapshot-input" type="text" name="username" placeholder="Usuario" aria-label="Nombre de usuario"> <!---->"`;
+
+exports[`Input Component - Page State with errors > snapshot of the basic component 1`] = `"<!----><label class="label mb-2" for="snapshot-input">Usuario</label><!----> <input class="input user-invalid:input-error user-invalid:text-error user-invalid:placeholder:text-error" id="snapshot-input" type="text" name="username" placeholder="Usuario" aria-label="Nombre de usuario"> <!---->"`;
