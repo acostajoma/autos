@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fade } from 'svelte/transition';
-    import { type HTMLInputAttributes } from 'svelte/elements';
+    import type { HTMLInputAttributes } from 'svelte/elements';
     import { page } from '$app/state';
 	
     let {

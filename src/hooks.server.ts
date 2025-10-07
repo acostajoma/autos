@@ -1,21 +1,20 @@
 import { sequence } from '@sveltejs/kit/hooks';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { dev } from '$app/environment';
-import { createServerClient } from '@supabase/ssr'
 import { DATABASE_URL } from '$env/static/private';
-import { getDb } from '$lib/server/db';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_PUBLISHABLE_KEY } from '$env/static/public'
+import { getDbClient, getSupabaseClient } from '$lib/server';
 
 
 
 const setupdDb : Handle = async ({ event, resolve }) => {
     if (dev) {
-        event.locals.db = getDb(DATABASE_URL)
+        event.locals.db = getDbClient(DATABASE_URL)
     } else {
         // in production use hyper drive database url
+        // @TODO FIX THIS ERRORS
         if (!event.platform) error(500, 'Platform not found');
         if (!event.platform.env.HYPERDRIVE) error(500, 'HYPERDRIVE binding not found');
-        event.locals.db = getDb(event.platform.env.HYPERDRIVE.connectionString)
+        event.locals.db = getDbClient(event.platform.env.HYPERDRIVE.connectionString)
     }
 	return await resolve(event);
 }
@@ -26,21 +25,7 @@ const supabase: Handle = async ({ event, resolve }) => {
      *
      * The Supabase client gets the Auth token from the request cookies.
      */
-    event.locals.supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_PUBLISHABLE_KEY, {
-      cookies: {
-        getAll: () => event.cookies.getAll(),
-        /**
-         * SvelteKit's cookies API requires `path` to be explicitly set in
-         * the cookie options. Setting `path` to `/` replicates previous/
-         * standard behavior.
-         */
-        setAll: (cookiesToSet) => {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            event.cookies.set(name, value, { ...options, path: '/' })
-          })
-        },
-      },
-    })
+    event.locals.supabase = getSupabaseClient(event)
     /**
      * Unlike `supabase.auth.getSession()`, which returns the session _without_
      * validating the JWT, this function also calls `getUser()` to validate the

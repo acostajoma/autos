@@ -8,10 +8,10 @@ declare global {
 	namespace App {
 		interface Error {
 			message: string;
-			status: number;
+			status?: number;
 		}
 		interface Locals {
-			db: import('$lib/server/db').DB;
+			db: import('$lib/server').DB;
 			supabase: SupabaseClient<Database>
 			safeGetSession: () => Promise<{ session: Session | null; user: User | null }>
 			session: Session | null

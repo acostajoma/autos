@@ -13,6 +13,7 @@ export const userRegistration = z.strictObject({
     email: emailSchema,
     password: passwordSchema,
     passwordConfirmation: passwordSchema,
-}).refine(data => data.password === data.passwordConfirmation,{
+}).refine(data => data.password === data.passwordConfirmation, {
     error: 'Las contraseñas no coinciden',
+    path: ['passwordConfirmation']
 })

@@ -11,7 +11,6 @@
 
 	let action: SignInOrSignUpAction = $derived(isSignIn ? '/iniciar-sesion' : '/registrarse');
 
-	
 </script>
 
 <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
