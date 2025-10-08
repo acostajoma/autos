@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import { Input } from '$lib/components';
+	import { Input, Form, Button } from '$lib/components';
 	import { LOGIN_FORM_ID, REGISTRATION_FORM_ID } from '$lib/constants/forms';
+	import { userRegistration, userSignIn } from '$lib/helpers';
 
 	let {
 		isSignIn
@@ -9,10 +9,14 @@
 		isSignIn: boolean;
 	} = $props();
 
+	export type FormId = typeof LOGIN_FORM_ID | typeof REGISTRATION_FORM_ID;
 	type SignInOrSignUpAction = '/iniciar-sesion' | '/registrarse';
+
+	const validateOnBlur = false;
+
 	let action: SignInOrSignUpAction = $derived(isSignIn ? '/iniciar-sesion' : '/registrarse');
-	type FormId = typeof LOGIN_FORM_ID | typeof REGISTRATION_FORM_ID;
 	let formId: FormId = $derived(isSignIn ? LOGIN_FORM_ID : REGISTRATION_FORM_ID);
+	let validationObject = $derived(isSignIn ? userSignIn : userRegistration);
 </script>
 
 <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -37,16 +41,18 @@
 	</div>
 
 	<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-		<form {action} method="POST" class="space-y-6" use:enhance id={formId}>
+		<Form {action} method="POST" class="space-y-6" id={formId} {validationObject}>
 			<div>
 				<Input
-					name="{formId}.email"
+					name="email"
 					type="email"
 					id="email"
 					required
 					autocomplete="email"
 					ariaLabel="Email"
 					label="Correo electrónico"
+					{validateOnBlur}
+					{formId}
 				/>
 			</div>
 
@@ -59,12 +65,14 @@
 				</div>
 				<div class="mt-2">
 					<Input
-						name="{formId}.password"
+						name="password"
 						type="password"
 						id="password"
 						required
 						autocomplete="current-password"
 						ariaLabel="Password"
+						{validateOnBlur}
+						{formId}
 					/>
 				</div>
 			</div>
@@ -76,26 +84,28 @@
 					</div>
 					<div class="mt-2">
 						<Input
-							name="{formId}.passwordConfirmation"
+							name="passwordConfirmation"
 							type="password"
 							id="passwordConfirmation"
 							required
 							autocomplete="current-password"
 							ariaLabel="Password Confirmation"
+							{validateOnBlur}
+							{formId}
 						/>
 					</div>
 				</div>
 			{/if}
 			<div>
-				<button type="submit" class="btn w-full btn-primary">
+				<Button type="submit" class="btn w-full btn-primary" {formId}>
 					{#if isSignIn}
 						Iniciar sesión
 					{:else}
 						Registrarse
 					{/if}
-				</button>
+				</Button>
 			</div>
-		</form>
+		</Form>
 
 		<p class="mt-10 text-center text-sm/6 text-gray-500 dark:text-gray-400">
 			{#if isSignIn}

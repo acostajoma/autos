@@ -2,6 +2,8 @@
 	import { page } from '$app/state';
 	import type { HTMLInputAttributes } from 'svelte/elements';
 	import { fade } from 'svelte/transition';
+	import { getFormContext } from '$lib/helpers';
+	import { untrack } from 'svelte';
 
 	let {
 		id,
@@ -12,31 +14,39 @@
 		autocomplete,
 		ariaLabel,
 		disabled,
-		label
+		label,
+		formId,
+		validateOnBlur = true
 	}: HTMLInputAttributes & {
 		ariaLabel: string;
 		label?: string;
-		/**
-		 * The id of the input. It must be a dot-separated string.
-		 * Example: "registration-form.email"
-		 */
-		name: `${string}.${string}`;
+		formId: string;
+		name: string;
+		validateOnBlur?: boolean;
 	} = $props();
 
-	let error = $derived.by(() => {
-		if (page.form?.fieldsErrors && name && page.form.fieldsErrors[name]) {
-			return page.form.fieldsErrors[name].errors.join(', ');
-		}
-		return null;
-	});
+	let formState = getFormContext(formId);
+	
+	// Just needed for initial state if the server returns a value
+	// As we are checking changes on the validateFields function
+	let error = $state(
+		untrack(() => formState.getFieldsErrors(name)));
 
-	$effect(() => {
-		if (error) {
-			setTimeout(() => {
-				error = null;
-			}, 3000);
+	const validateFields = () => {
+		formState.validateFields();
+		error = formState.getFieldsErrors(name);
+	}
+	const onblur :  ( ()=> void ) | undefined = () => validateOnBlur ? 
+		validateFields()
+		: undefined;
+
+	const oninput : ( (e: Event) => void ) = (e) => {
+		formState.setValue(name, (e.target as HTMLInputElement).value);
+		formState.setTaintedFields(name);
+		if (!validateOnBlur) {
+			validateFields();
 		}
-	});
+	} 
 </script>
 
 {#if label}
@@ -51,6 +61,8 @@
 	{placeholder}
 	{autocomplete}
 	{disabled}
+	{oninput}
+	{onblur}
 	aria-label={ariaLabel}
 	aria-describedby={error ? `${name}-error` : undefined}
 	class="input user-invalid:text-error user-invalid:input-error user-invalid:placeholder:text-error"

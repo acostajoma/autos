@@ -1,32 +1,32 @@
-import { REGISTRATION_FORM_ID } from '$lib/constants';
-import { signUpNewUser, userRegistration } from '$lib/server';
-import type { FailureActionData } from '$lib/types';
+import { REGISTRATION_FORM_ID, LOGIN_FORM_ID } from '$lib/constants';
+import { signInUser, signUpNewUser } from '$lib/server';
+import { userRegistration, userSignIn } from '$lib/helpers';
+import type { FailureActionData } from '$lib/server';
 import type { ActionFailure, RequestEvent } from '@sveltejs/kit';
 import { fail, redirect } from '@sveltejs/kit';
-import { treeifyError } from 'zod';
+import { FormFailureActionBuilder } from '$lib/server';
 
-export async function registerUser(event: RequestEvent): Promise<ActionFailure<FailureActionData>> {
+export async function registerUser(event: RequestEvent, isSignIn: boolean = false): Promise<ActionFailure<FailureActionData>> {
 	const { request } = event;
 	const formData = await request.formData();
-	const email = formData.get(REGISTRATION_FORM_ID + '.email') as string;
-	const password = formData.get(REGISTRATION_FORM_ID + '.password') as string;
-	const passwordConfirmation = formData.get(
-		REGISTRATION_FORM_ID + '.passwordConfirmation'
-	) as string;
+	const email = formData.get('email') as string;
+	const password = formData.get('password') as string;
+	const passwordConfirmation = isSignIn ? undefined : formData.get('passwordConfirmation') as string;
+	const validationObject = isSignIn ? userSignIn : userRegistration;
 
-	const validatedData = userRegistration.safeParse({ email, password, passwordConfirmation });
-	if (!validatedData.success) {
-		const treeError = treeifyError(validatedData.error);
-		const failuredata = {
-			[REGISTRATION_FORM_ID]: {
-				values: {
-					email: email
-				},
-				fieldsErrors: treeError.properties
-			}
-		};
-		console.log('Logging error', failuredata);
-		return fail<FailureActionData>(400, failuredata);
+	const formId = isSignIn ? LOGIN_FORM_ID : REGISTRATION_FORM_ID;
+	const formValues : Record<string, string | number | undefined> = { email, password };
+	if (!isSignIn) {
+		formValues.passwordConfirmation = passwordConfirmation;
+	}
+
+	let failureActionData = FormFailureActionBuilder.buildFormValidationResult(
+		{ formId, values: formValues, validationObject },
+	);
+
+	if (!failureActionData[formId]?.success) {
+		console.error('error zod validation', failureActionData);
+		return fail<FailureActionData>(400, failureActionData);
 	}
 
 	const emailRedirectTo = event.url.origin;
@@ -34,29 +34,16 @@ export async function registerUser(event: RequestEvent): Promise<ActionFailure<F
 		session,
 		user,
 		error: signUpError
-	} = await signUpNewUser(event.locals.supabase, email, password, emailRedirectTo);
+	} = isSignIn ? await signInUser(event.locals.supabase, email, password) : await signUpNewUser(event.locals.supabase, email, password, emailRedirectTo);
 
-	if (signUpError) {
-		console.error('error signUpError', signUpError);
-		return fail<FailureActionData>(400, {
-			[REGISTRATION_FORM_ID]: {
-				values: {
-					email: email
-				},
-				formError: signUpError.message
-			}
-		});
-	}
-
-	if (session && user) {
+	if (session && user && !signUpError) {
 		redirect(303, '/');
 	}
-	return fail<FailureActionData>(400, {
-		[REGISTRATION_FORM_ID]: {
-			values: {
-				email: email
-			},
-			formError: 'Error al registrar el usuario'
-		}
-	});
+
+	failureActionData = FormFailureActionBuilder.buildFormErrorResult(
+		{ formId, values: { email }, formError: signUpError?.message || '' },
+	);
+
+	console.error('error failureActionData', failureActionData);
+	return fail<FailureActionData>(400, failureActionData);
 }
