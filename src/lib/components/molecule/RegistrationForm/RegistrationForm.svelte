@@ -1,16 +1,18 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { Input } from '$lib/components';
-	import type { SignInOrSignUpAction } from '$lib/types';
-	import { page } from '$app/state';
+	import { LOGIN_FORM_ID, REGISTRATION_FORM_ID } from '$lib/constants/forms';
+
 	let {
 		isSignIn
 	}: {
 		isSignIn: boolean;
 	} = $props();
 
+	type SignInOrSignUpAction = '/iniciar-sesion' | '/registrarse';
 	let action: SignInOrSignUpAction = $derived(isSignIn ? '/iniciar-sesion' : '/registrarse');
-
+	type FormId = typeof LOGIN_FORM_ID | typeof REGISTRATION_FORM_ID;
+	let formId: FormId = $derived(isSignIn ? LOGIN_FORM_ID : REGISTRATION_FORM_ID);
 </script>
 
 <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -35,12 +37,12 @@
 	</div>
 
 	<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-		<form {action} method="POST" class="space-y-6" use:enhance>
+		<form {action} method="POST" class="space-y-6" use:enhance id={formId}>
 			<div>
 				<Input
-					id="email"
+					name="{formId}.email"
 					type="email"
-					name="email"
+					id="email"
 					required
 					autocomplete="email"
 					ariaLabel="Email"
@@ -57,9 +59,9 @@
 				</div>
 				<div class="mt-2">
 					<Input
-						id="password"
+						name="{formId}.password"
 						type="password"
-						name="password"
+						id="password"
 						required
 						autocomplete="current-password"
 						ariaLabel="Password"
@@ -71,13 +73,12 @@
 				<div>
 					<div class="flex items-center justify-between">
 						<label for="passwordConfirmation" class="label">Confirmar contraseña</label>
-				
 					</div>
 					<div class="mt-2">
 						<Input
-							id="passwordConfirmation"
+							name="{formId}.passwordConfirmation"
 							type="password"
-							name="passwordConfirmation"
+							id="passwordConfirmation"
 							required
 							autocomplete="current-password"
 							ariaLabel="Password Confirmation"

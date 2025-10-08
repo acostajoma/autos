@@ -1,11 +1,18 @@
 export type Theme = 'light' | 'dark';
-export type SignInOrSignUpAction = '/iniciar-sesion' | '/registrarse';
+type FormFailureData = {
+	fieldsErrors?: {
+		[key: string]:
+			| {
+					errors: string[];
+			  }
+			| undefined;
+	};
+	values?: {
+		[key: string]: string | number | undefined;
+	};
+	formError?: string;
+};
+
 export type FailureActionData = {
-    [key : string]: string | number | object | undefined;
-    fieldsErrors?: {
-        [key: string]: {
-            errors: string[];
-        } | undefined;
-    }
-    formError?: string;
+	[key: string]: FormFailureData;
 };
