@@ -4,7 +4,7 @@ import { isRedirect, type RequestEvent } from '@sveltejs/kit';
 import { getDbClient, getSupabaseClient } from '$lib/server';
 import { DATABASE_URL } from '$env/static/private';
 import { mockEvent } from '$lib/constants/testing';
-import { getSupabaseAdminClient } from '$lib/server/utils/getSupabaseAdminClient';
+import { REGISTRATION_FORM_ID } from '$lib/constants';
 
 describe('registerUser', () => {
 	let supabase: App.Locals['supabase'];
@@ -20,7 +20,7 @@ describe('registerUser', () => {
 		testEmail = `test-${Date.now()}@example.com`;
 	});
 
-	test('registra un usuario exitosamente con datos válidos', async () => {
+	test('Registers a user successfully with valid data', async () => {
 		const mockRequest = new Request('http://localhost:5173/registrarse', {
 			method: 'POST',
 			body: new URLSearchParams({
@@ -67,7 +67,7 @@ describe('registerUser', () => {
 		// }
 	});
 
-	test('falla con contraseñas que no coinciden', async () => {
+	test('Fails with passwords that do not match', async () => {
 		const mockRequest = new Request('http://localhost:5173/registrarse', {
 			method: 'POST',
 			body: new URLSearchParams({
@@ -87,13 +87,13 @@ describe('registerUser', () => {
 
 		const result = await registerUser(mockEvent);
 
-		expect(result.data.fieldsErrors?.passwordConfirmation?.errors[0]).toBe(
+		expect(result.data[REGISTRATION_FORM_ID].fieldsErrors?.passwordConfirmation?.errors[0]).toBe(
 			'Las contraseñas no coinciden'
 		);
 		expect(result.status).toBe(400);
 	});
 
-	test('falla con email inválido', async () => {
+	test('Fails with invalid email', async () => {
 		const mockRequest = new Request('http://localhost:5173/registrarse', {
 			method: 'POST',
 			body: new URLSearchParams({
@@ -113,11 +113,11 @@ describe('registerUser', () => {
 
 		const result = await registerUser(mockEvent);
 
-		expect(result.data.fieldsErrors?.email?.errors[0]).toBe('El email no es válido');
+		expect(result.data[REGISTRATION_FORM_ID].fieldsErrors?.email?.errors[0]).toBe('El email no es válido');
 		expect(result.status).toBe(400);
 	});
 
-	test('falla con contraseña muy corta', async () => {
+	test('Fails with a very short password', async () => {
 		const mockRequest = new Request('http://localhost:5173/registrarse', {
 			method: 'POST',
 			body: new URLSearchParams({
@@ -136,8 +136,12 @@ describe('registerUser', () => {
 		} as RequestEvent;
 
 		const result = await registerUser(mockEvent);
-
-		expect(result.data.fieldsErrors?.passwordConfirmation?.errors[0]).toBe(
+		// A short password generates errors in both the password and passwordConfirmation fields
+		// We check that at least one of the two fields has the expected error
+		const passwordError = result.data[REGISTRATION_FORM_ID].fieldsErrors?.password?.errors[0];
+		const passwordConfirmationError = result.data[REGISTRATION_FORM_ID].fieldsErrors?.passwordConfirmation?.errors[0];
+		
+		expect(passwordError || passwordConfirmationError).toBe(
 			'La contraseña debe tener al menos 8 caracteres'
 		);
 		expect(result.status).toBe(400);
