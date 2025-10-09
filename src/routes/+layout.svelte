@@ -4,6 +4,7 @@
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import type { LayoutData } from './$types';
+	import {Header} from '$lib/components';
 
 	let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
@@ -31,7 +32,6 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-{#if session}
-<button class="btn btn-primary" onclick={logout}>Cerrar Sesión</button>
-{/if}
+<Header />
+
 {@render children?.()}

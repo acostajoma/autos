@@ -79,6 +79,10 @@
     --noise: 0;
   }
 
-  @utility input{
+@utility input{
     @apply w-full;
+}
+
+@utility link{
+    @apply font-semibold;
 }
