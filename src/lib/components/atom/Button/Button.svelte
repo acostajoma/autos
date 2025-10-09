@@ -13,6 +13,7 @@
 		formId: string
 	} = $props();
 
+	// Gets the shared form state from the context
 	let formState = getFormContext(formId);
 	let disabled = $derived(formState.getDisabled());
 

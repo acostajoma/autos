@@ -16,7 +16,7 @@
 
 	let action: SignInOrSignUpAction = $derived(isSignIn ? '/iniciar-sesion' : '/registrarse');
 	let formId: FormId = $derived(isSignIn ? LOGIN_FORM_ID : REGISTRATION_FORM_ID);
-	let validationObject = $derived(isSignIn ? userSignIn : userRegistration);
+	let validationSchema = $derived(isSignIn ? userSignIn : userRegistration);
 </script>
 
 <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -41,7 +41,7 @@
 	</div>
 
 	<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-		<Form {action} method="POST" class="space-y-6" id={formId} {validationObject}>
+		<Form {action} method="POST" class="space-y-6" id={formId} {validationSchema}>
 			<div>
 				<Input
 					name="email"

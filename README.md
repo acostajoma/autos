@@ -181,6 +181,28 @@ autos/
 └── tests/                   # Test files
 ```
 
+## Architecture & Patterns
+
+### Form System
+
+This project implements a robust form management system with client-side and server-side validation using Zod. The system provides:
+
+- **Reactive State Management**: Automatic form state synchronization
+- **Dual Validation**: Client-side (immediate feedback) and server-side (security)
+- **Error Handling**: Field-specific and form-level error messages
+- **Smart Disabled State**: Automatic button disabling based on form state
+- **Type Safety**: Full TypeScript support with Zod schemas
+
+**📖 For detailed documentation on how to use the form system, see:**
+[Form System Documentation](src/lib/components/atom/Form/README.md)
+
+The form system includes:
+- `Form` component - Main form wrapper with state management
+- `Input` component - Smart input fields with validation
+- `Button` component - Auto-disabling submit buttons
+- `FormState` class - Reactive state management
+- `FormFailureActionBuilder` - Server-side error handling
+
 ---
 
 Built with ❤️ using SvelteKit and Supabase

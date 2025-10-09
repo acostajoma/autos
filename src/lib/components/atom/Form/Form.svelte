@@ -13,22 +13,24 @@
 		action,
 		id,
 		method = 'POST',
-		validationObject
+		validationSchema
 	}: HTMLFormAttributes & {
 		id: string;
-		validationObject: ZodObject<ZodRawShape>;
+		validationSchema: ZodObject<ZodRawShape>;
 	} = $props();
 
-	let formState = new FormState(id, validationObject);
+	// Initialize the state and exposes to child components through the context
+	let formState = new FormState(id, validationSchema);
 	setFormContext(id, formState);
 
-    // This will be only used for the initial state if the server returns a value so we use untrack
 	let formError = $derived( 
 		formState.getFormError()
     );
 
     /**
-     * Set the form data from the server, only track page state changes
+     * Sync the server state with the client state
+	 * Only execute when the page form data changes
+	 * Untrack is used to avoid unnecessary re-renders 
     */
 	$effect(() => {
 		if (page.form?.[id]) {

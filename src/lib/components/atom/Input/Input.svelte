@@ -25,22 +25,30 @@
 		validateOnBlur?: boolean;
 	} = $props();
 
+	// Gets the shared form state from the context
 	let formState = getFormContext(formId);
 	
-	// Just needed for initial state if the server returns a value
-	// As we are checking changes on the validateFields function
-	let error = $state(
+	/** 
+	 * Local error state for this specific field
+	 * Initializes with untrack to avoid reactive dependencies on creation
+	 * Note that fieldError changes onInput and onBlur so not necessary to track
+	*/
+	let fieldError = $state(
 		untrack(() => formState.getFieldsErrors(name)));
 
 	const validateFields = () => {
 		formState.validateFields();
-		error = formState.getFieldsErrors(name);
+		fieldError = formState.getFieldsErrors(name);
 	}
-	const onblur :  ( ()=> void ) | undefined = () => validateOnBlur ? 
+
+	/**
+	 * If validateOnBlur is true, validate the fields, otherwise does nothing
+	*/
+	const handleBlur :  ( ()=> void ) | undefined = () => validateOnBlur ? 
 		validateFields()
 		: undefined;
 
-	const oninput : ( (e: Event) => void ) = (e) => {
+	const handleInput : ( (e: Event) => void ) = (e) => {
 		formState.setValue(name, (e.target as HTMLInputElement).value);
 		formState.setTaintedFields(name);
 		if (!validateOnBlur) {
@@ -61,13 +69,13 @@
 	{placeholder}
 	{autocomplete}
 	{disabled}
-	{oninput}
-	{onblur}
+	oninput={handleInput}
+	onblur={handleBlur}
 	aria-label={ariaLabel}
-	aria-describedby={error ? `${name}-error` : undefined}
+	aria-describedby={fieldError ? `${name}-error` : undefined}
 	class="input user-invalid:text-error user-invalid:input-error user-invalid:placeholder:text-error"
 />
 
-{#if error}
-	<p id="{name}-error" class="mt-2 text-error" transition:fade>{error}</p>
+{#if fieldError}
+	<p id="{name}-error" class="mt-2 text-error" transition:fade>{fieldError}</p>
 {/if}

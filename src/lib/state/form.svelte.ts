@@ -16,6 +16,20 @@ export interface FormData {
     values: FormValues;
 };
 
+
+const FORM_ERROR_DISMISSAL_TIMEOUT_MS = 4000;
+
+
+/**
+ * Manages the reactive state of a form with Zod validation
+ * 
+ * This class is responsible for:
+ * - Storing field values
+ * - Validating data against a Zod schema
+ * - Managing per-field and general errors
+ * - Controlling the disabled state of the submit button
+ * - Synchronizing with server data
+ */
 export class FormState implements FormData {
     disabled : boolean = $state(false);
     taintedFields : SvelteSet<string> = new SvelteSet();
@@ -23,13 +37,20 @@ export class FormState implements FormData {
     fieldsErrors : FieldErrors = $state({});
     values : FormValues = $state({});
     
-    private formErrorTimeout: ReturnType<typeof setTimeout> | undefined = undefined
+    // Timeout for the form error dismissal
+    private formErrorDismissalTimeout: ReturnType<typeof setTimeout> | undefined = undefined
 
     constructor(private formId: string, private validationObject: ZodObject<ZodRawShape>) {
         this.formId = formId;
         this.validationObject = validationObject;
     }
 
+    /**
+	 * Updates the local state with data received from the server
+	 * Usually called after a form submission that returns errors
+	 * 
+	 * @param formData - Form data returned by the server
+	 */
     setPageFormData(formData: FormData){
         this.disabled = formData.disabled;
         this.taintedFields = new SvelteSet(formData.taintedFields);
@@ -37,16 +58,16 @@ export class FormState implements FormData {
         this.fieldsErrors = formData.fieldsErrors;
         this.values = formData.values;
 
-        // Cancel the timeout if it exists
-        if (this.formErrorTimeout) {
-            clearTimeout(this.formErrorTimeout);
+        // Cancels the previous timeout if it exists
+        if (this.formErrorDismissalTimeout) {
+            clearTimeout(this.formErrorDismissalTimeout);
         }
         // Set the timeout if the form error is not undefined
         if (this.formError) {
-            this.formErrorTimeout = setTimeout(() => {
+            this.formErrorDismissalTimeout = setTimeout(() => {
                 this.formError = undefined;
-                this.formErrorTimeout = undefined;
-            }, 4000);
+                this.formErrorDismissalTimeout = undefined;
+            }, FORM_ERROR_DISMISSAL_TIMEOUT_MS);
         }
     }
 
