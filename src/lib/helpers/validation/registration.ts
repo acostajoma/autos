@@ -22,3 +22,7 @@ export const userSignIn = z.strictObject({
     email: emailSchema,
     password: passwordSchema,
 })
+
+export const userResetPassword = z.strictObject({
+    email: emailSchema,
+})

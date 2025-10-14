@@ -215,7 +215,7 @@ describe('Input Component', () => {
 
         const errorMessage = document.querySelector('p');
         expect(errorMessage).toBeTruthy();
-        expect(errorMessage?.textContent).toBe('Campo requerido');
+        expect(errorMessage?.textContent).toBe('Required Field');
         expect(errorMessage?.classList.contains('text-error')).toBe(true);
 
         unmount(component);

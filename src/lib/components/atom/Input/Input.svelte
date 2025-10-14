@@ -55,6 +55,7 @@
 			validateFields();
 		}
 	} 
+	$inspect(formState.getDisabled());
 </script>
 
 {#if label}

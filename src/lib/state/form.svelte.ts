@@ -31,7 +31,7 @@ const FORM_ERROR_DISMISSAL_TIMEOUT_MS = 4000;
  * - Synchronizing with server data
  */
 export class FormState implements FormData {
-    disabled : boolean = $state(false);
+    disabled : boolean = $state(true);
     taintedFields : SvelteSet<string> = new SvelteSet();
     formError : string | undefined = $state(undefined);
     fieldsErrors : FieldErrors = $state({});
@@ -95,6 +95,7 @@ export class FormState implements FormData {
             this.formError ||
             valuesKeys.length === 0 ||
             fieldsErrorsKeys.length > 0 ||
+            valuesValues.length === 0 ||
             valuesValues.length !== valuesKeys.length || valuesValues.some(value => (value === undefined || value === '' || value === null))
         ) {
             this.disabled = true;

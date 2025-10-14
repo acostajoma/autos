@@ -1,22 +1,44 @@
 <script lang="ts">
+	import type { ZodObject, ZodRawShape } from 'zod';
+
 	import { Input, Form, Button } from '$lib/components';
-	import { LOGIN_FORM_ID, REGISTRATION_FORM_ID } from '$lib/constants/forms';
-	import { userRegistration, userSignIn } from '$lib/helpers';
+	import { LOGIN_FORM_ID, REGISTRATION_FORM_ID, RESET_PASSWORD_FORM_ID } from '$lib/constants';
+	import { userRegistration, userSignIn, userResetPassword } from '$lib/helpers';
+
+	export type FormId =
+		| typeof LOGIN_FORM_ID
+		| typeof REGISTRATION_FORM_ID
+		| typeof RESET_PASSWORD_FORM_ID;
+	type AuthFormActionPath = '/iniciar-sesion' | '/registrarse' | '/recuperar-acceso';
+	type AuthFormSchemaMap = {
+		actionName: AuthFormActionPath;
+		schema: ZodObject<ZodRawShape>;
+		formId: FormId;
+		// these are derived from the formMode and are helpers for the template
+		isResetPassword: boolean;
+		isSignIn: boolean;
+		isSignUp: boolean;
+	};
+
+	const SHOULD_VALIDATE_ON_BLUR = false;
 
 	let {
-		isSignIn
+		formMode
 	}: {
-		isSignIn: boolean;
+		formMode: 'signIn' | 'signUp' | 'resetPassword';
 	} = $props();
 
-	export type FormId = typeof LOGIN_FORM_ID | typeof REGISTRATION_FORM_ID;
-	type SignInOrSignUpAction = '/iniciar-sesion' | '/registrarse';
+	
 
-	const validateOnBlur = false;
-
-	let action: SignInOrSignUpAction = $derived(isSignIn ? '/iniciar-sesion' : '/registrarse');
-	let formId: FormId = $derived(isSignIn ? LOGIN_FORM_ID : REGISTRATION_FORM_ID);
-	let validationSchema = $derived(isSignIn ? userSignIn : userRegistration);
+	let { actionName, schema, formId, isResetPassword, isSignIn, isSignUp }: AuthFormSchemaMap = $derived.by(() => {
+		if (formMode === 'signIn') {
+			return { actionName: '/iniciar-sesion', schema: userSignIn, formId: LOGIN_FORM_ID, isResetPassword : false, isSignIn: true, isSignUp: false };
+		}
+		if (formMode === 'signUp') {
+			return { actionName: '/registrarse', schema: userRegistration, formId: REGISTRATION_FORM_ID, isResetPassword : false, isSignIn: false, isSignUp: true };
+		}
+		return { actionName: '/recuperar-acceso', schema: userResetPassword, formId: RESET_PASSWORD_FORM_ID, isResetPassword : true, isSignIn: false, isSignUp: false };
+	});
 </script>
 
 <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -34,14 +56,22 @@
 		<h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">
 			{#if isSignIn}
 				Inicia sesión en tu cuenta
-			{:else}
+			{:else if isSignUp}
 				Regístrate en nuestra plataforma
+			{:else}
+				Recupera tu contraseña
 			{/if}
 		</h2>
 	</div>
 
 	<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-		<Form {action} method="POST" class="space-y-6" id={formId} {validationSchema}>
+		<Form
+			action={actionName}
+			method="POST"
+			class="space-y-6"
+			id={formId}
+			validationSchema={schema}
+		>
 			<div>
 				<Input
 					name="email"
@@ -51,33 +81,34 @@
 					autocomplete="email"
 					ariaLabel="Email"
 					label="Correo electrónico"
-					{validateOnBlur}
-					{formId}
+					validateOnBlur={SHOULD_VALIDATE_ON_BLUR}
+					formId={formId}
 				/>
 			</div>
 
-			<div>
-				<div class="flex items-center justify-between">
-					<label for="password" class="label">Contraseña</label>
-					{#if isSignIn}
-						<a href="/todo" class="link link-primary">¿Olvidaste tu contraseña?</a>
-					{/if}
+			{#if !isResetPassword}
+				<div>
+					<div class="flex items-center justify-between">
+						<label for="password" class="label">Contraseña</label>
+						{#if formMode === 'signIn'}
+							<a href="/recuperar-acceso" class="link link-primary">¿Olvidaste tu contraseña?</a>
+						{/if}
+					</div>
+					<div class="mt-2">
+						<Input
+							name="password"
+							type="password"
+							id="password"
+							required
+							autocomplete="current-password"
+							ariaLabel="Password"
+							validateOnBlur={SHOULD_VALIDATE_ON_BLUR}
+							formId={formId}
+						/>
+					</div>
 				</div>
-				<div class="mt-2">
-					<Input
-						name="password"
-						type="password"
-						id="password"
-						required
-						autocomplete="current-password"
-						ariaLabel="Password"
-						{validateOnBlur}
-						{formId}
-					/>
-				</div>
-			</div>
-
-			{#if !isSignIn}
+			{/if}
+			{#if isSignUp}
 				<div>
 					<div class="flex items-center justify-between">
 						<label for="passwordConfirmation" class="label">Confirmar contraseña</label>
@@ -90,31 +121,35 @@
 							required
 							autocomplete="current-password"
 							ariaLabel="Password Confirmation"
-							{validateOnBlur}
-							{formId}
+							validateOnBlur={SHOULD_VALIDATE_ON_BLUR}
+							formId={formId}
 						/>
 					</div>
 				</div>
 			{/if}
 			<div>
-				<Button type="submit" class="btn w-full btn-primary" {formId}>
+				<Button type="submit" class="btn w-full btn-primary" formId={formId}>
 					{#if isSignIn}
 						Iniciar sesión
-					{:else}
+					{:else if isSignUp}
 						Registrarse
+					{:else}
+						Recuperar contraseña
 					{/if}
 				</Button>
 			</div>
 		</Form>
 
-		<p class="mt-10 text-center text-sm/6 text-gray-500 dark:text-gray-400">
-			{#if isSignIn}
-				¿Aún no tienes una cuenta?
-				<a href="/registrarse" class="link link-primary">Regístrate ahora</a>
-			{:else}
-				¿Ya tienes una cuenta?
-				<a href="/iniciar-sesion" class="link link-primary">Inicia sesión</a>
-			{/if}
-		</p>
+		{#if !isResetPassword}
+			<p class="mt-10 text-center text-sm/6 text-gray-500 dark:text-gray-400">
+				{#if isSignIn}
+					¿Aún no tienes una cuenta?
+					<a href="/registrarse" class="link link-primary">Regístrate ahora</a>
+				{:else if isSignUp}
+					¿Ya tienes una cuenta?
+					<a href="/iniciar-sesion" class="link link-primary">Inicia sesión</a>
+				{/if}
+			</p>
+		{/if}
 	</div>
 </div>

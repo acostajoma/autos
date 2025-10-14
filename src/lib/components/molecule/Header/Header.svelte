@@ -8,6 +8,7 @@
 		const { error } = await supabase.auth.signOut()
 		if (error) {
 			// @TODO: add logic to handle error
+			// maybe a toast notification
 		console.error(error)
 		}
   	}

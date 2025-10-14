@@ -2,4 +2,4 @@
 	import { RegistrationForm } from '$lib/components';
 </script>
 
-<RegistrationForm isSignIn={false} />
+<RegistrationForm formMode="signUp" />
