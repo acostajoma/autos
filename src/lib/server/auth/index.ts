@@ -17,7 +17,7 @@ function createErrorMessageInSpanish(status: number) : string {
         case 409:
             return 'No se pudo completar el registro. Por favor, intenta con otro correo electrónico.';
         case 422:
-            return 'La contraseña es demasiado débil';
+            return 'No se pudo procesar la solicitud. Por favor, intenta más tarde';
         case 429:
             return 'Demasiados intentos. Por favor, espera un momento antes de intentar nuevamente';
         case 500:
@@ -45,7 +45,7 @@ async function handleAuthAction(
 				email,
 				password,
 				options: {
-					emailRedirectTo
+					emailRedirectTo,
 				}
 			}));
 		} else {

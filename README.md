@@ -203,6 +203,8 @@ The form system includes:
 - `FormState` class - Reactive state management
 - `FormFailureActionBuilder` - Server-side error handling
 
+To use authentication and QA it use pnpm dev:dev
+
 ---
 
 Built with ❤️ using SvelteKit and Supabase

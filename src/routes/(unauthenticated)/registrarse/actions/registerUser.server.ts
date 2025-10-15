@@ -36,20 +36,18 @@ export async function registerUser(event: RequestEvent, isSignIn: boolean = fals
 		{ formId, values: formValues, validationSchema },
 	);
 
-	if (!validationResult [formId]?.success) {
+	if (!validationResult[formId]?.success) {
 		console.error('error zod validation', validationResult );
 		return fail<FailureActionData>(400, validationResult );
 	}
 
 	const emailRedirectTo = event.url.origin;
 	const {
-		session,
-		user,
 		error: signUpError
 	} = isSignIn ? await signInUser(event.locals.supabase, email, password) : await signUpNewUser(event.locals.supabase, email, password, emailRedirectTo);
 
-	if (session && user && !signUpError) {
-		redirect(303, '/');
+	if (!signUpError) {
+		redirect(303, '/confirmar-usuario');
 	}
 
 	validationResult  = FormFailureActionBuilder.buildFormErrorResult(

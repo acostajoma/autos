@@ -10,8 +10,6 @@ const setupdDb : Handle = async ({ event, resolve }) => {
     if (dev) {
         event.locals.db = getDbClient(DATABASE_URL)
     } else {
-        // in production use hyper drive database url
-        // @TODO FIX THIS ERRORS
         if (!event.platform) error(500, 'Platform not found');
         if (!event.platform.env.HYPERDRIVE) error(500, 'HYPERDRIVE binding not found');
         event.locals.db = getDbClient(event.platform.env.HYPERDRIVE.connectionString)

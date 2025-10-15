@@ -22,7 +22,7 @@ The system is made up of several layers that work together:
 │  Page (+page.svelte)                            │
 │  ┌───────────────────────────────────────────┐  │
 │  │  High-Level Form                          │  │
-│  │  (e.g., RegistrationForm.svelte)          │  │
+│  │  (e.g., AuthForm.svelte)          │  │
 │  │  ┌─────────────────────────────────────┐  │  │
 │  │  │  Form Component                     │  │  │
 │  │  │  - Creates FormState                │  │  │

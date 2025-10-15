@@ -26,3 +26,11 @@ export const userSignIn = z.strictObject({
 export const userResetPassword = z.strictObject({
     email: emailSchema,
 })
+
+export const userChangePassword = z.strictObject({
+    password: passwordSchema,
+    passwordConfirmation: passwordSchema,
+}).refine(data => data.password === data.passwordConfirmation, {
+    error: 'Las contraseñas no coinciden',
+    path: ['passwordConfirmation']
+})

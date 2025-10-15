@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { RegistrationForm } from '$lib/components';
+	import { AuthForm } from '$lib/components';
 </script>
 
-<RegistrationForm formMode="signIn" />
+<AuthForm formMode="signIn" />
