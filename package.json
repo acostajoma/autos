@@ -24,7 +24,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "supabase:start": "supabase start",
-    "supabase:stop": "supabase stop",
+    "supabase:stop": "supabase stop"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.1.1",
