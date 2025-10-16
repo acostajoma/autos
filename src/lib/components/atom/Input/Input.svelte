@@ -18,7 +18,7 @@
 		formId,
 		validateOnBlur = true
 	}: HTMLInputAttributes & {
-		ariaLabel: string;
+		ariaLabel?: string;
 		label?: string;
 		formId: string;
 		name: string;

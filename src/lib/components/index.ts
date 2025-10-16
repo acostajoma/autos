@@ -5,3 +5,4 @@ export { default as Form } from './atom/Form/Form.svelte';
 export { default as Button } from './atom/Button/Button.svelte';
 export { default as Header } from './molecule/Header/Header.svelte';
 export { default as FeedbackPage } from './molecule/FeedbackPage/FeedbackPage.svelte';
+export {default as CarPostForm} from './molecule/CarPostForm/CarPostForm.svelte';

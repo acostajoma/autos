@@ -1,7 +1,6 @@
 import { pgTable, serial, text, integer, decimal, primaryKey, uuid, timestamp, boolean, index, check, foreignKey, pgPolicy } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
 import { authenticatedRole, authUsers } from "drizzle-orm/supabase";
-import { createInsertSchema, } from 'drizzle-zod';
 
 // User
 export const user = pgTable('user', {
@@ -81,10 +80,6 @@ export const postRelation = relations(post, ({ one, many }) => ({
 	}),
 	advertising: many(advertising),
 }));
-
-export const postInsertSchema = createInsertSchema(post,{
-	price: schema => schema.min(0),
-});
 
 // Advertising Types
 export const advertisingType = pgTable('advertising_type', {
