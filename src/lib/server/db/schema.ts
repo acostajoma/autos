@@ -228,7 +228,7 @@ export const country = pgTable('country', {
 	id: serial('id').primaryKey(),
 	name: text('name').notNull(),
 	currencySymbol: text('currency_symbol').notNull(),
-	currency: text('currency').notNull().unique(),
+	currency: text('currency').notNull(),
 	phoneCode: text('phone_code').notNull(),
 },
 () => ([
