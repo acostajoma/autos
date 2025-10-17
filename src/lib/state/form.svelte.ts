@@ -6,7 +6,7 @@ export type FieldErrors = Record<string, {
 				errors: string[];
 		  } | undefined>;
 
-type FormValues = Record<string, string | number | undefined>;
+type FormValues = Record<string, string | number | boolean | undefined>;
 
 export interface FormData {
     disabled: boolean;
@@ -96,7 +96,8 @@ export class FormState implements FormData {
             valuesKeys.length === 0 ||
             fieldsErrorsKeys.length > 0 ||
             valuesValues.length === 0 ||
-            valuesValues.length !== valuesKeys.length || valuesValues.some(value => (value === undefined || value === '' || value === null))
+            valuesValues.length !== valuesKeys.length || 
+            valuesValues.some(value => (value === undefined || value === '' || value === null))
         ) {
             this.disabled = true;
         } 
@@ -109,7 +110,7 @@ export class FormState implements FormData {
         return this.disabled;
     }
     
-    setValue(name: string, value: string | number | undefined) {
+    setValue(name: string, value: string | number | boolean | undefined) {
         this.values[name] = value;
     }
 

@@ -7,11 +7,8 @@
 
 	let {
 		id,
-		type,
 		name,
 		required,
-		placeholder,
-		autocomplete,
 		ariaLabel,
 		disabled,
 		label,
@@ -25,14 +22,13 @@
 		validateOnBlur?: boolean;
 	} = $props();
 
-	// Gets the shared form state from the context
 	let formState = getFormContext(formId);
 	
-	/** 
-	 * Local error state for this specific field
-	 * Initializes with untrack to avoid reactive dependencies on creation
-	 * Note that fieldError changes onInput and onBlur so not necessary to track
-	*/
+	// Initialize checkbox value as false by default if not set
+	if (formState.getValue(name) === '') {
+		formState.setValue(name, false);
+	}
+	
 	let fieldError = $state(
 		untrack(() => formState.getFieldsErrors(name)));
 
@@ -41,17 +37,13 @@
 		fieldError = formState.getFieldsErrors(name);
 	}
 
-	/**
-	 * If validateOnBlur is true, validate the fields, otherwise does nothing
-	*/
 	const handleBlur :  ( ()=> void ) | undefined = () => validateOnBlur ? 
 		validateFields()
 		: undefined;
 
-	const handleInput : ( (e: Event) => void ) = (e) => {
-		const target = e.target as HTMLInputElement;
-		const value = target.type === 'number' ? Number(target.value) : target.value;
-		formState.setValue(name, value);
+	const handleChange : ( (e: Event) => void ) = (e) => {
+		const checked = (e.target as HTMLInputElement).checked;
+		formState.setValue(name, checked);
 		formState.setTaintedFields(name);
 		if (!validateOnBlur) {
 			validateFields();
@@ -59,25 +51,25 @@
 	} 
 </script>
 
-{#if label}
-	<label for={id} class="label mb-2">{label}</label>
-{/if}
-
-<input
-	{id}
-	{type}
-	{name}
-	{required}
-	{placeholder}
-	{autocomplete}
-	{disabled}
-	oninput={handleInput}
-	onblur={handleBlur}
-	aria-label={ariaLabel}
-	aria-describedby={fieldError ? `${name}-error` : undefined}
-	class="input user-invalid:text-error user-invalid:input-error user-invalid:placeholder:text-error"
-/>
+<label class="flex items-center gap-2 cursor-pointer">
+	<input
+		{id}
+		type="checkbox"
+		{name}
+		{required}
+		{disabled}
+		onchange={handleChange}
+		onblur={handleBlur}
+		aria-label={ariaLabel}
+		aria-describedby={fieldError ? `${name}-error` : undefined}
+		class="checkbox user-invalid:checkbox-error"
+	/>
+	{#if label}
+		<span class="label">{label}</span>
+	{/if}
+</label>
 
 {#if fieldError}
 	<p id="{name}-error" class="mt-2 text-error" transition:fade>{fieldError}</p>
 {/if}
+

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // Schemas reutilizables
-const positiveIntegerSchema = z.number({ message: 'Debe ser un número válido' })
+const positiveIntegerSchema = z.number({ message: 'Debe ser una opción válida' })
 	.int({ message: 'Debe ser un número entero' })
 	.positive({ message: 'Debe ser mayor a 0' });
 
@@ -15,7 +15,9 @@ const priceSchema = z.number({ message: 'El precio es requerido' })
 
 // Validación para información básica del vehículo
 export const carBasicInfo = z.strictObject({
-	versionId: positiveIntegerSchema.describe('ID de la versión del vehículo'),
+	makeId: positiveIntegerSchema.describe('ID de la marca'),
+	modelId: positiveIntegerSchema.describe('ID del modelo'),  
+	versionId: positiveIntegerSchema.describe('ID de la versión'),
 	year: z.number({ message: 'El año es requerido' })
 		.int({ message: 'El año debe ser un número entero' })
 		.min(1900, { message: 'El año debe ser mayor o igual a 1900' })
@@ -55,7 +57,10 @@ export const carConditionAndDocs = z.strictObject({
 
 // Validación para ubicación
 export const carLocation = z.strictObject({
-	cityId: positiveIntegerSchema.describe('ID de la ciudad'),
+	// countryId: positiveIntegerSchema.describe('País'),
+	regionId: positiveIntegerSchema.describe('Región'),
+	stateId: positiveIntegerSchema.describe('Estado'),
+	cityId: positiveIntegerSchema.describe('Ciudad'),
 });
 
 // Validación para información de la publicación
@@ -76,15 +81,11 @@ export const postInfo = z.strictObject({
 		.toUpperCase(),
 	isPriceNegotiable: z.boolean({ message: 'Debe indicar si el precio es negociable' })
 		.default(false),
-	state: z.string({ message: 'El estado de la publicación es requerido' })
-		.min(1, { message: 'El estado de la publicación es requerido' })
-		.trim(),
 });
 
 // Validación para imágenes del vehículo
 export const carImageSchema = z.strictObject({
-	imageUrl: z.string({ message: 'La URL de la imagen es requerida' })
-		.url({ message: 'Debe ser una URL válida' })
+	imageUrl: z.url({ message: 'La URL de la imagen es requerida' })
 		.trim(),
 	imageAlt: z.string({ message: 'El texto alternativo es requerido' })
 		.min(5, { message: 'El texto alternativo debe tener al menos 5 caracteres' })
@@ -115,6 +116,17 @@ export const createCarPost = carBasicInfo
 	.extend(carImages.shape)
 	.extend(carEquipment.shape);
 
+// Partial schema for form without required images (useful for multi-step forms)
+export const createCarPostWithoutImages = carBasicInfo
+	.extend(carTechnicalSpecs.shape)
+	.extend(carConditionAndDocs.shape)
+	.extend(carLocation.shape)
+	.extend(postInfo.shape)
+	.extend({
+		images: z.array(carImageSchema).optional().default([]),
+		equipmentIds: z.array(positiveIntegerSchema).optional().default([])
+	});
+
 // Tipos TypeScript inferidos de los schemas
 export type CarBasicInfo = z.infer<typeof carBasicInfo>;
 export type CarTechnicalSpecs = z.infer<typeof carTechnicalSpecs>;
@@ -125,4 +137,5 @@ export type CarImageSchema = z.infer<typeof carImageSchema>;
 export type CarImages = z.infer<typeof carImages>;
 export type CarEquipment = z.infer<typeof carEquipment>;
 export type CreateCarPost = z.infer<typeof createCarPost>;
+export type CreateCarPostWithoutImages = z.infer<typeof createCarPostWithoutImages>;
 

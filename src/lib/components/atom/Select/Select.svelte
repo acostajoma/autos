@@ -1,38 +1,36 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import type { HTMLInputAttributes } from 'svelte/elements';
+	import type { HTMLSelectAttributes } from 'svelte/elements';
 	import { fade } from 'svelte/transition';
 	import { getFormContext } from '$lib/helpers';
 	import { untrack } from 'svelte';
 
 	let {
 		id,
-		type,
 		name,
 		required,
-		placeholder,
-		autocomplete,
 		ariaLabel,
 		disabled,
 		label,
 		formId,
-		validateOnBlur = true
-	}: HTMLInputAttributes & {
+		options = [],
+		validateOnBlur = true,
+		auxSelect = false
+	}: HTMLSelectAttributes & {
 		ariaLabel?: string;
 		label?: string;
 		formId: string;
 		name: string;
+		options?: { value: string | number; label: string }[];
 		validateOnBlur?: boolean;
+		/**
+		 * if auxSelect is true it will work for validation purposes but is not sent to the server
+		 */
+		auxSelect?: boolean;
 	} = $props();
 
-	// Gets the shared form state from the context
 	let formState = getFormContext(formId);
 	
-	/** 
-	 * Local error state for this specific field
-	 * Initializes with untrack to avoid reactive dependencies on creation
-	 * Note that fieldError changes onInput and onBlur so not necessary to track
-	*/
 	let fieldError = $state(
 		untrack(() => formState.getFieldsErrors(name)));
 
@@ -41,17 +39,16 @@
 		fieldError = formState.getFieldsErrors(name);
 	}
 
-	/**
-	 * If validateOnBlur is true, validate the fields, otherwise does nothing
-	*/
 	const handleBlur :  ( ()=> void ) | undefined = () => validateOnBlur ? 
 		validateFields()
 		: undefined;
 
-	const handleInput : ( (e: Event) => void ) = (e) => {
-		const target = e.target as HTMLInputElement;
-		const value = target.type === 'number' ? Number(target.value) : target.value;
-		formState.setValue(name, value);
+	const handleChange : ( (e: Event) => void ) = (e) => {
+		const target = e.target as HTMLSelectElement;
+		const value = target.value;
+		const numValue = Number(value);
+		const finalValue = !isNaN(numValue) && value !== '' ? numValue : value;
+		formState.setValue(name, finalValue);
 		formState.setTaintedFields(name);
 		if (!validateOnBlur) {
 			validateFields();
@@ -63,21 +60,24 @@
 	<label for={id} class="label mb-2">{label}</label>
 {/if}
 
-<input
+<select
 	{id}
-	{type}
-	{name}
+	name={auxSelect ? undefined : name}
 	{required}
-	{placeholder}
-	{autocomplete}
 	{disabled}
-	oninput={handleInput}
+	onchange={handleChange}
 	onblur={handleBlur}
 	aria-label={ariaLabel}
 	aria-describedby={fieldError ? `${name}-error` : undefined}
-	class="input user-invalid:text-error user-invalid:input-error user-invalid:placeholder:text-error"
-/>
+	class="select w-full user-invalid:text-error user-invalid:select-error"
+>
+	<option value="" disabled selected>Seleccionar...</option>
+	{#each options as option}
+		<option value={option.value}>{option.label}</option>
+	{/each}
+</select>
 
 {#if fieldError}
 	<p id="{name}-error" class="mt-2 text-error" transition:fade>{fieldError}</p>
 {/if}
+

@@ -10,12 +10,12 @@ export type FailureActionData = Record<string, FormData & { success: boolean }>;
 
 type BuildFormValidationResultProps = {
 	formId: string;
-	values: Record<string, string | number | undefined>;
+	values: Record<string, string | number | boolean | undefined>;
 	validationSchema: ZodObject<ZodRawShape>;
 };
 type BuildFormErrorResultProps = {
 	formId: string;
-	values: Record<string, string | number | undefined>;
+	values: Record<string, string | number | boolean | undefined>;
 	formError: string;
 };
 
@@ -33,8 +33,8 @@ export class FormFailureActionBuilder {
 	 * @returns Values without password fields
 	 */
 	static removePasswordData(
-		values: Record<string, string | number | undefined>
-	): Record<string, string | number | undefined> {
+		values: Record<string, string | number | boolean | undefined>
+	): Record<string, string | number | boolean | undefined> {
 		if (values.passwordConfirmation) {
 			delete values.passwordConfirmation;
 		}

@@ -1,10 +1,10 @@
 import { mount, unmount } from 'svelte';
 import { expect, test, describe } from 'vitest';
-import RegistrationForm from './RegistrationForm.svelte';
+import AuthForm from './AuthForm.svelte';
 
-describe('RegistrationForm', () => {
+describe('AuthForm', () => {
     test(' sign in renders correctly with sign in true', () => {
-	const component = mount(RegistrationForm, {
+	const component = mount(AuthForm, {
 		target: document.body, 
 		props: { formMode: 'signIn' }
 	});
@@ -20,7 +20,7 @@ describe('RegistrationForm', () => {
     });
 
     test(' sign in renders correctly with sign in false', () => {
-        const component = mount(RegistrationForm, {
+        const component = mount(AuthForm, {
             target: document.body, 
             props: { formMode: 'signUp' }
         });
@@ -36,7 +36,7 @@ describe('RegistrationForm', () => {
     });
 
     test('renders correctly with resetPassword mode', () => {
-        const component = mount(RegistrationForm, {
+        const component = mount(AuthForm, {
             target: document.body,
             props: { formMode: 'resetPassword' }
         });

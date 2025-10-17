@@ -20,7 +20,7 @@
 
 </script>
 
-<button {type} class="btn w-full btn-primary {additionalClasses}" {onclick} {disabled}>
+<button {type} class="btn {additionalClasses}" {onclick} {disabled}>
 	{@render children?.()}
 </button>
  

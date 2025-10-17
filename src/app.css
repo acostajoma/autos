@@ -86,3 +86,7 @@
 @utility link{
     @apply font-semibold;
 }
+
+@utility card-border{
+    @apply border border-neutral-content/15;
+}
