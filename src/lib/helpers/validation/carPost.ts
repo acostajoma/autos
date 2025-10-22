@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // Schemas reutilizables
-const positiveIntegerSchema = z.number({ message: 'Debe ser una opción válida' })
+export  const positiveIntegerSchema = z.number({ message: 'Debe ser una opción válida' })
 	.int({ message: 'Debe ser un número entero' })
 	.positive({ message: 'Debe ser mayor a 0' });
 

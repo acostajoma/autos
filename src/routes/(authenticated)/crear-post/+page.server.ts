@@ -3,12 +3,20 @@ import { fail } from '@sveltejs/kit';
 import { createCarPostWithoutImages } from '$lib/helpers/validation/carPost';
 import { CAR_POST_FORM_ID } from '$lib/constants/forms';
 import { FormFailureActionBuilder } from '$lib/server';
+import { CAR_DATA_CACHE_KEY } from '$lib/constants';
+import { carOptionsQuery, type CarOptions } from '$lib/server';
+import { getCacheValue, setCacheValue } from '$lib/server';
 
 
-export const load: PageServerLoad = async () => {
-	console.log('Loading page');
+export const load: PageServerLoad = async ({url, locals :{db }, platform }) => {
+	let carOptions = await getCacheValue<CarOptions>(platform, url, CAR_DATA_CACHE_KEY);
+	if (!carOptions) {
+		carOptions = await carOptionsQuery(db);
+		await setCacheValue<CarOptions>(platform, url, CAR_DATA_CACHE_KEY, carOptions);
+	}
+
 	return {
-		
+		carOptions: carOptions
 	};
 };
 

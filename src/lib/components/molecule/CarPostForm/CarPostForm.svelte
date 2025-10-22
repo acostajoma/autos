@@ -1,55 +1,24 @@
 <script lang="ts">
-	import { type Snippet } from 'svelte';
-	import { Form, Input, Textarea, Select, Checkbox, Button } from '$lib/components';
+	import type { CarOptions } from '$lib/server/db/queries';
+	import { Form, Input, Textarea, Select, Checkbox, Button, CarFilter } from '$lib/components';
 	import { createCarPostWithoutImages } from '$lib/helpers/validation/carPost';
 	import { CAR_POST_FORM_ID } from '$lib/constants/forms';
 
 	const formId = CAR_POST_FORM_ID;
 
-	// Placeholder options - these should ideally come from a database or API
-	const colorOptions = [
-		{ value: 1, label: 'Negro' },
-		{ value: 2, label: 'Blanco' },
-		{ value: 3, label: 'Gris' },
-		{ value: 4, label: 'Rojo' },
-		{ value: 5, label: 'Azul' }
-	];
+	let { carOptions }: { carOptions: CarOptions } = $props();
+	const { colors, fuels, transmissions, tractions, regions, makes } = carOptions;
 
-	const fuelOptions = [
-		{ value: 1, label: 'Gasolina' },
-		{ value: 2, label: 'Diésel' },
-		{ value: 3, label: 'Eléctrico' },
-		{ value: 4, label: 'Híbrido' }
-	];
-
-	const transmissionOptions = [
-		{ value: 1, label: 'Manual' },
-		{ value: 2, label: 'Automática' },
-		{ value: 3, label: 'CVT' }
-	];
-
-	const tractionOptions = [
-		{ value: 1, label: 'Delantera' },
-		{ value: 2, label: 'Trasera' },
-		{ value: 3, label: '4x4' }
-	];
 
 	const conditionOptions = [
 		{ value: 'nuevo', label: 'Nuevo' },
 		{ value: 'usado', label: 'Usado' },
-		{ value: 'seminuevo', label: 'Seminuevo' }
+		{ value: 'seminuevo', label: 'Semi nuevo' }
 	];
 
 	const currencyOptions = [
 		{ value: 'USD', label: 'Dólares (USD)' },
-		{ value: 'EUR', label: 'Euros (EUR)' },
-		{ value: 'CLP', label: 'Pesos Chilenos (CLP)' }
-	];
-
-	const stateOptions = [
-		{ value: 'draft', label: 'Borrador' },
-		{ value: 'published', label: 'Publicado' },
-		{ value: 'archived', label: 'Archivado' }
+		{ value: 'CRC', label: 'Colones (CRC)' }
 	];
 
 	const cityOptions = [
@@ -64,11 +33,6 @@
 		{ value: '3', label: 'Estado 3' }
 	];
 
-	const makeOptions = [
-		{ value: '1', label: 'Toyota' },
-		{ value: '2', label: 'Ford' },
-		{ value: '3', label: 'Chevrolet' }
-	];
 	const modelOptions = [
 		{ value: '1', label: 'Corolla' },
 		{ value: '2', label: 'Camry' },
@@ -78,11 +42,6 @@
 		{ value: '1', label: '2020' },
 		{ value: '2', label: '2021' },
 		{ value: '3', label: '2022' }
-	];
-	const regionOptions = [
-		{ value: '1', label: 'Region 1' },
-		{ value: '2', label: 'Region 2' },
-		{ value: '3', label: 'Region 3' }
 	];
 </script>
 
@@ -136,25 +95,7 @@
 				<h2 class="card-title">Información Básica del Vehículo</h2>
 
 				<div class="grid grid-cols-2 gap-6">
-					<div class="col-span-2 md:col-span-1">
-						<!-- Aux select to make the request to the API to get the makes -->
-						<Select label="Marca" name="makeId" {formId} options={makeOptions} auxSelect />
-					</div>
-					<div class="col-span-2 md:col-span-1">
-						<!-- Aux select to make the request to the API to get the models -->
-						<Select label="Modelo" name="modelId" {formId} options={modelOptions} auxSelect />
-					</div>
-					<div class="col-span-2 md:col-span-1">
-						<Select label="Versión" name="versionId" {formId} options={versionOptions} />
-					</div>
-
-					<div class="col-span-2 md:col-span-1">
-						<Input type="number" label="Año" name="year" {formId} placeholder="2020" />
-					</div>
-
-					<div class="col-span-2 md:col-span-1">
-						<Select label="Color" name="colorId" {formId} options={colorOptions} />
-					</div>
+					<CarFilter formId={formId} makes={makes} class="col-span-2 md:col-span-1" />
 				</div>
 			</div>
 		</div>
@@ -166,19 +107,14 @@
 
 				<div class="grid grid-cols-2 gap-6">
 					<div class="col-span-2 md:col-span-1">
-						<Select label="Tipo de Combustible" name="fuelId" {formId} options={fuelOptions} />
+						<Select label="Tipo de Combustible" name="fuelId" {formId} options={fuels} />
 					</div>
 					<div class="col-span-2 md:col-span-1">
-						<Select
-							label="Transmisión"
-							name="transmissionId"
-							{formId}
-							options={transmissionOptions}
-						/>
+						<Select label="Transmisión" name="transmissionId" {formId} options={transmissions} />
 					</div>
 
 					<div class="col-span-2 md:col-span-1">
-						<Select label="Tracción" name="tractionId" {formId} options={tractionOptions} />
+						<Select label="Tracción" name="tractionId" {formId} options={tractions} />
 					</div>
 					<div class="col-span-2 md:col-span-1">
 						<Input
@@ -259,16 +195,22 @@
 		<div class="card mb-6 card-border">
 			<div class="card-body">
 				<h2 class="card-title">Ubicación</h2>
-				
+
 				<div class="grid grid-cols-2 gap-6">
 					<div class="col-span-2 md:col-span-1">
-						<Select label="Región" name="regionId" {formId} options={regionOptions} auxSelect />
+						<Select label="Región" name="regionId" {formId} options={regions} auxSelect />
 					</div>
 					<div class="col-span-2 md:col-span-1">
-						<Select label="Estado" name="stateId" {formId} options={stateLocationOptions} auxSelect />
+						<Select
+							label="Estado"
+							name="stateId"
+							{formId}
+							options={stateLocationOptions}
+							auxSelect
+						/>
 					</div>
 					<div class="col-span-2 md:col-span-1">
-						<Select label="Ciudad" name="cityId" {formId} options={cityOptions}  />
+						<Select label="Ciudad" name="cityId" {formId} options={cityOptions} />
 					</div>
 				</div>
 			</div>

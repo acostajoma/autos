@@ -1,4 +1,4 @@
-import { Hyperdrive } from '@cloudflare/workers-types';
+import { Hyperdrive, KVNamespace } from '@cloudflare/workers-types';
 import type { Session, SupabaseClient, User } from '@supabase/supabase-js'
 import type { Database } from './database.types.ts' // import generated types
 
@@ -24,7 +24,12 @@ declare global {
 		interface Platform {
 			env: {
 				HYPERDRIVE: Hyperdrive;
+				CAR_DATA_CACHE: KVNamespace;
 			};
+			context: {
+				waitUntil(promise: Promise<unknown>): void;
+			};
+			caches: CacheStorage & { default: Cache }
 		}
 	}
 }

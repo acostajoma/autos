@@ -1,16 +1,23 @@
 {
-    "$schema": "node_modules/wrangler/config-schema.json",
+	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "cars-app",
 	"main": ".svelte-kit/cloudflare/_worker.js",
 	"compatibility_date": "2025-09-19",
-	"compatibility_flags": ["nodejs_compat"],
-    "pages_build_output_dir": ".svelte-kit/cloudflare",
-
-    "hyperdrive": [
-      {
-        "binding": "HYPERDRIVE",
-        "id": "d9c7c41558ac43c3bc32a61cbdb49a6c",
-        "localConnectionString": "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
-      }
-    ],
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"pages_build_output_dir": ".svelte-kit/cloudflare",
+	"hyperdrive": [
+		{
+			"binding": "HYPERDRIVE",
+			"id": "d9c7c41558ac43c3bc32a61cbdb49a6c",
+			"localConnectionString": "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "CAR_DATA_CACHE",
+			"id": "9803e6935e5f4a1a975d35c9c7bd0ac9"
+		}
+	],
 }

@@ -1,0 +1,1 @@
+export const CAR_DATA_CACHE_KEY = 'car-data-cache';

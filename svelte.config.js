@@ -7,13 +7,21 @@ const config = {
 	// for more information about preprocessors
 	preprocess: vitePreprocess(),
 	kit: {
+		experimental:{
+			remoteFunctions: true,
+		},
 		adapter: adapter({
 			// See below for an explanation of these options
 			config: './wrangler.jsonc',
 			platformProxy: {
 				persist: true,
 			}
-		})
+		}),
+	},
+	compilerOptions:{
+		experimental:{
+			async: true,
+		}
 	}
 };
 

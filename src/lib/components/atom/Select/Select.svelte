@@ -14,15 +14,15 @@
 		label,
 		formId,
 		options = [],
-		validateOnBlur = true,
-		auxSelect = false
+		auxSelect = false,
+		onChange,
 	}: HTMLSelectAttributes & {
 		ariaLabel?: string;
 		label?: string;
 		formId: string;
 		name: string;
 		options?: { value: string | number; label: string }[];
-		validateOnBlur?: boolean;
+		onChange?: (value: string | number) => void | ((value: string | number) => Promise<void>) | Promise<void>;
 		/**
 		 * if auxSelect is true it will work for validation purposes but is not sent to the server
 		 */
@@ -39,9 +39,6 @@
 		fieldError = formState.getFieldsErrors(name);
 	}
 
-	const handleBlur :  ( ()=> void ) | undefined = () => validateOnBlur ? 
-		validateFields()
-		: undefined;
 
 	const handleChange : ( (e: Event) => void ) = (e) => {
 		const target = e.target as HTMLSelectElement;
@@ -50,10 +47,10 @@
 		const finalValue = !isNaN(numValue) && value !== '' ? numValue : value;
 		formState.setValue(name, finalValue);
 		formState.setTaintedFields(name);
-		if (!validateOnBlur) {
-			validateFields();
-		}
+		validateFields();
+		onChange?.(finalValue);
 	} 
+
 </script>
 
 {#if label}
@@ -66,7 +63,6 @@
 	{required}
 	{disabled}
 	onchange={handleChange}
-	onblur={handleBlur}
 	aria-label={ariaLabel}
 	aria-describedby={fieldError ? `${name}-error` : undefined}
 	class="select w-full user-invalid:text-error user-invalid:select-error"
