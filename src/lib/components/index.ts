@@ -10,3 +10,5 @@ export { default as Header } from './molecule/Header/Header.svelte';
 export { default as FeedbackPage } from './molecule/FeedbackPage/FeedbackPage.svelte';
 export {default as CarPostForm} from './molecule/CarPostForm/CarPostForm.svelte';
 export {default as CarFilter} from './molecule/CarFilter/CarFilter.svelte';
+export {default as RemoteFormIssues} from './RemoteFormIssues.svelte';
+export {default as AuthFormHeader} from './AuthFormHeader.svelte';  

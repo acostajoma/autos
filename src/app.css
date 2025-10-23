@@ -80,7 +80,7 @@
   }
 
 @utility input{
-    @apply w-full;
+    @apply w-full user-invalid:text-error user-invalid:input-error user-invalid:placeholder:text-error;
 }
 
 @utility link{

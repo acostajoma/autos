@@ -6,7 +6,7 @@ type SignUpNewUserResponse = {
 	error: App.Error | null;
 };
     
-function createErrorMessageInSpanish(status: number) : string {
+export function createErrorMessageInSpanish(status: number) : string {
     switch (status) {
         case 400:
             return 'No se pudo completar su solicitud. Por favor, intenta más tarde';
